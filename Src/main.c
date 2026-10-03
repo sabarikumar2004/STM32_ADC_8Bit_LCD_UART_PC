@@ -3,7 +3,6 @@
 #define RCC_BASE        0x40021000UL
 
 #define RCC_APB2ENR     (*(volatile uint32_t *)(RCC_BASE + 0x18))
-#define RCC_APB1ENR     (*(volatile uint32_t *)(RCC_BASE + 0x1C))
 
 #define IOPAEN          (1 << 2)
 #define IOPBEN          (1 << 3)
@@ -11,8 +10,11 @@
 #define ADC1EN          (1 << 9)
 #define UART1EN         (1 << 14)
 
+
 #define AFIO_BASE       0x40010000UL
+
 #define AFIO_MAPR       (*(volatile uint32_t *)(AFIO_BASE + 0x04))
+
 
 #define GPIOA_BASE      0x40010800UL
 
@@ -20,10 +22,12 @@
 #define GPIOA_CRH       (*(volatile uint32_t *)(GPIOA_BASE + 0x04))
 #define GPIOA_ODR       (*(volatile uint32_t *)(GPIOA_BASE + 0x0C))
 
+
 #define GPIOB_BASE      0x40010C00UL
 
 #define GPIOB_CRL       (*(volatile uint32_t *)(GPIOB_BASE + 0x00))
 #define GPIOB_ODR       (*(volatile uint32_t *)(GPIOB_BASE + 0x0C))
+
 
 #define ADC1_BASE       0x40012400UL
 
@@ -34,6 +38,7 @@
 #define ADC1_SQR3       (*(volatile uint32_t *)(ADC1_BASE + 0x34))
 #define ADC1_DR         (*(volatile uint32_t *)(ADC1_BASE + 0x4C))
 
+
 #define USART1_BASE     0x40013800UL
 
 #define USART1_SR       (*(volatile uint32_t *)(USART1_BASE + 0x00))
@@ -41,8 +46,10 @@
 #define USART1_BRR      (*(volatile uint32_t *)(USART1_BASE + 0x08))
 #define USART1_CR1      (*(volatile uint32_t *)(USART1_BASE + 0x0C))
 
-#define RS              (1 << 3)
-#define EN              (1 << 1)
+
+#define LCD_RS          (1 << 3)
+#define LCD_EN          (1 << 1)
+
 
 void delay_ms(uint32_t ms)
 {
@@ -57,43 +64,53 @@ void delay_ms(uint32_t ms)
     }
 }
 
+
 void LCD_Enable(void)
 {
-    GPIOB_ODR |= EN;
+    GPIOB_ODR |= LCD_EN;
 
     delay_ms(2);
 
-    GPIOB_ODR &= ~EN;
+    GPIOB_ODR &= ~LCD_EN;
 
     delay_ms(2);
 }
+
 
 void LCD_Command(char cmd)
 {
-    GPIOB_ODR &= ~RS;
+    GPIOB_ODR &= ~LCD_RS;
 
-    GPIOA_ODR = cmd;
+    GPIOA_ODR &= ~0xFF;
+
+    GPIOA_ODR |= (uint8_t)cmd;
 
     LCD_Enable();
 }
+
 
 void LCD_Data(char data)
 {
-    GPIOB_ODR |= RS;
+    GPIOB_ODR |= LCD_RS;
 
-    GPIOA_ODR = data;
+    GPIOA_ODR &= ~0xFF;
+
+    GPIOA_ODR |= (uint8_t)data;
 
     LCD_Enable();
 }
+
 
 void LCD_String(char *str)
 {
     while (*str)
     {
         LCD_Data(*str);
+
         str++;
     }
 }
+
 
 void LCD_Init(void)
 {
@@ -122,6 +139,7 @@ void LCD_Init(void)
     LCD_Command(0x06);
 }
 
+
 void LCD_Sendfloat(float value)
 {
     uint16_t integer_part;
@@ -129,7 +147,8 @@ void LCD_Sendfloat(float value)
 
     integer_part = (uint16_t)value;
 
-    decimal_part = (uint16_t)((value - integer_part) * 100);
+    decimal_part =
+        (uint16_t)((value - integer_part) * 100);
 
     LCD_Data(integer_part + '0');
 
@@ -139,6 +158,7 @@ void LCD_Sendfloat(float value)
 
     LCD_Data((decimal_part % 10) + '0');
 }
+
 
 void ADC_Init(void)
 {
@@ -171,6 +191,7 @@ void ADC_Init(void)
     ADC1_CR2 |= (1 << 20);
 }
 
+
 float ADC_Read(void)
 {
     uint16_t adc_value;
@@ -183,6 +204,7 @@ float ADC_Read(void)
 
     return ((float)adc_value * 3.3f) / 4095.0f;
 }
+
 
 void UART_Init(void)
 {
@@ -197,6 +219,7 @@ void UART_Init(void)
     USART1_CR1 |= (1 << 3);
 }
 
+
 void UART_SendChar(char data)
 {
     while (!(USART1_SR & (1 << 7)));
@@ -204,14 +227,17 @@ void UART_SendChar(char data)
     USART1_DR = data;
 }
 
+
 void UART_SendString(char *str)
 {
     while (*str)
     {
         UART_SendChar(*str);
+
         str++;
     }
 }
+
 
 void UART_Sendfloat(float value)
 {
@@ -220,7 +246,8 @@ void UART_Sendfloat(float value)
 
     integer_part = (uint16_t)value;
 
-    decimal_part = (uint16_t)((value - integer_part) * 100);
+    decimal_part =
+        (uint16_t)((value - integer_part) * 100);
 
     UART_SendChar(integer_part + '0');
 
@@ -230,6 +257,7 @@ void UART_Sendfloat(float value)
 
     UART_SendChar((decimal_part % 10) + '0');
 }
+
 
 int main(void)
 {
@@ -245,19 +273,24 @@ int main(void)
 
     AFIO_MAPR |= (2 << 24);
 
+
     GPIOA_CRL = 0x33333333;
+
 
     GPIOB_CRL &= ~0x0000FFFF;
 
     GPIOB_CRL |= 0x00003030;
 
+
     GPIOA_ODR = 0;
 
-    GPIOB_ODR &= ~(RS | EN);
+    GPIOB_ODR &= ~(LCD_RS | LCD_EN);
+
 
     RCC_APB2ENR |= ADC1EN;
 
     RCC_APB2ENR |= UART1EN;
+
 
     LCD_Init();
 
@@ -265,13 +298,16 @@ int main(void)
 
     UART_Init();
 
+
     while (1)
     {
         voltage = ADC_Read();
 
+
         LCD_Command(0x80);
 
         LCD_String("ADC VOLTAGE:");
+
 
         LCD_Command(0xC0);
 
@@ -279,11 +315,13 @@ int main(void)
 
         LCD_String(" V");
 
+
         UART_SendString("ADC Voltage: ");
 
         UART_Sendfloat(voltage);
 
         UART_SendString(" V\r\n");
+
 
         delay_ms(300);
     }
