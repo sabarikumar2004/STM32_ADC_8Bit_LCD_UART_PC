@@ -11,6 +11,14 @@ The project reads an analog voltage from a potentiometer using the ADC1 peripher
 
 The STM32 peripherals are configured directly using memory-mapped registers, without using HAL or CubeMX-generated peripheral code.
 
+# STM32F103 Bare-Metal ADC, 16x2 LCD & UART
+
+![STM32 ADC LCD UART Project](Image/STM32_ADC_8Bit_LCD_UART_PC.png)
+
+## Project Overview
+
+This project demonstrates bare-metal Embedded C programming on the STM32F103C8T6 (Blue Pill).
+
 ## Features
 
 - STM32F103C8T6 Blue Pill
