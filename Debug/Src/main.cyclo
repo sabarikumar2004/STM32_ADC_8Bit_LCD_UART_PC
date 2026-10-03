@@ -1,0 +1,14 @@
+../Src/main.c:47:6:delay_ms	3
+../Src/main.c:60:6:LCD_Enable	1
+../Src/main.c:71:6:LCD_Command	1
+../Src/main.c:80:6:LCD_Data	1
+../Src/main.c:89:6:LCD_String	2
+../Src/main.c:98:6:LCD_Init	1
+../Src/main.c:125:6:LCD_Sendfloat	1
+../Src/main.c:143:6:ADC_Init	3
+../Src/main.c:174:7:ADC_Read	2
+../Src/main.c:187:6:UART_Init	1
+../Src/main.c:200:6:UART_SendChar	2
+../Src/main.c:207:6:UART_SendString	2
+../Src/main.c:216:6:UART_Sendfloat	1
+../Src/main.c:234:5:main	1
