@@ -11,20 +11,6 @@ The project reads an analog voltage from a potentiometer using the ADC1 peripher
 
 The STM32 peripherals are configured directly using memory-mapped registers, without using HAL or CubeMX-generated peripheral code.
 
-## Project Images
-
-### Hardware Setup
-
-![STM32F103 ADC LCD UART Hardware Setup](Image/hardware_setup.jpg)
-
-### LCD Output
-
-![16x2 LCD ADC Voltage Display](Image/lcd_output.jpg)
-
-### UART Output
-
-![UART Serial Monitor Output](Image/uart_output.jpg)
-
 ## Features
 
 - STM32F103C8T6 Blue Pill
